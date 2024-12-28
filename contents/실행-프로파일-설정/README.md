@@ -1,13 +1,11 @@
-# gradle : 빌드 시, 특정 리소스 추가 시키는 방법
+# gradle : title
 
 ## given
 
-![alt text](../../images/20241227_204014.png)
-
-## when
+### build.gradle
 
 ```
-// gradle 빌드 시 적용할 profile 지정
+// 속성 정의
 ext.profile = project.hasProperty('profile') ? profile : 'local'
 
 // 리소스 디렉토리 관리
@@ -21,12 +19,25 @@ sourceSets {
         }
     }
 }
+
+// 애플리케이션 실행
+bootRun {
+    args = ["--spring.profiles.active=${profile}"]
+}
 ```
 
+## when
+
+### 애플리케이션 실행
+
 ```
-./gradlew clean bootJar -P profile=prod
+gradle bootRun -P profile=dev
 ```
 
 ## then
 
-![alt text](../../images/20241227_204650.png)
+### 애플리케이션 실행
+
+![alt text](../../images/20241228_185138.png)
+
+![alt text](../../images/20241228_185216.png)
