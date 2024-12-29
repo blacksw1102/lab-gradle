@@ -1,4 +1,4 @@
-# gradle : 프로파일별 빌드 task 정의
+# gradle : 프로파일 기반 빌드 TASK 정의
 
 ## given
 

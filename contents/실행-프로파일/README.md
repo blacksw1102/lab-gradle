@@ -1,4 +1,4 @@
-# gradle : title
+# gradle : 프로파일 기반 프로젝트 실행
 
 ## given
 
