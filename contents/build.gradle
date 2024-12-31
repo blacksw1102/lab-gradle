@@ -1,0 +1,95 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.4.0'
+    id 'io.spring.dependency-management' version '1.1.6'
+    id 'com.github.spotbugs' version '6.0.18'
+}
+
+group = 'com.blacksw'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // base
+    implementation 'org.springframework.boot:spring-boot-starter'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // was
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+// bootJar 설정
+tasks.named('bootJar') {
+    project.ext.profile = project.hasProperty('profile') ? profile : 'local'
+    dependsOn "sourceSets"
+}
+
+// bootRun 설정
+tasks.named('bootRun') {
+    project.ext.profile = project.hasProperty('profile') ? profile : 'local'
+    args = ["--spring.profiles.active=${profile}"]
+}
+
+// spotbugs 설정
+tasks.named("spotbugsMain") {
+    reports.create("html") {
+        required = true
+        outputLocation = layout.buildDirectory.file("reports/spotbugs.html")
+        setStylesheet("fancy-hist.xsl")
+    }
+}
+
+// 리소스 설정
+tasks.register("sourceSets") {
+    sourceSets {
+        main {
+            resources {
+                srcDirs "src/main/resources/${profile}"
+                exclude "**/local/**"
+                exclude "**/dev/**"
+                exclude "**/prod/**"
+            }
+        }
+    }
+}
+
+// local 프로파일 빌드
+tasks.register('buildLocal') {
+    group = "custom"
+    description = "local 프로파일 환경에서 빌드를 수행합니다."
+    project.ext.profile = "local"
+    finalizedBy "clean"
+    finalizedBy "bootJar"
+}
+
+// dev 프로파일 빌드
+tasks.register('buildDev') {
+    group = "custom"
+    description = "dev 프로파일 환경에서 빌드를 수행합니다."
+    project.ext.profile = "dev"
+    finalizedBy "clean"
+    finalizedBy "bootJar"
+}
+
+// prod 프로파일 빌드
+tasks.register('buildProd') {
+    group = "custom"
+    description = "prod 프로파일 환경에서 빌드를 수행합니다."
+    project.ext.profile = "prod"
+    finalizedBy "clean"
+    finalizedBy "bootJar"
+}
